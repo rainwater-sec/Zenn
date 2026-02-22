@@ -1,0 +1,24 @@
+{
+  "name": "zenn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rainwater-sec/Zenn.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/rainwater-sec/Zenn/issues"
+  },
+  "homepage": "https://github.com/rainwater-sec/Zenn#readme",
+  "dependencies": {
+    "zenn-cli": "^0.4.5"
+  }
+}
