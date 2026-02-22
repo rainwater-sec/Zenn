@@ -2,7 +2,7 @@
 title: "初学者が仮想マシンのroot権限を奪取するまで"
 emoji: "🌊"
 topics: []
-published: false
+published: true
 ---
 
 ## はじめに
