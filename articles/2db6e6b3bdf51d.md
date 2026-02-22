@@ -1,7 +1,8 @@
 ---
 title: "初学者が仮想マシンのroot権限を奪取するまで"
 emoji: "🌊"
-topics: []
+type: "tech"
+topics: ["security", "hacking", "php", "cybersecurity"]
 published: true
 ---
 
