@@ -1,0 +1,9 @@
+{
+  "pasteImage.path": "${projectRoot}/images",
+  "pasteImage.insertPattern": "![${imageSyntaxName}](/images/${imageFileName})",
+  "pasteImage.showFilePathConfirmInputBox": true,
+  "markdown.copyFiles.destination": {
+    "articles/*.md": "/images/${fileName}"
+  },
+  "markdown.editor.drop.enabled": true
+}
