@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/rainwater-sec/Zenn#readme",
   "dependencies": {
-    "zenn-cli": "^0.4.5"
+    "zenn-cli": "^0.4.6"
   }
 }
