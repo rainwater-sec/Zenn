@@ -5,6 +5,40 @@ type: "tech" # tech: 技術記事 / idea: アイデア
 topics: []
 published: false
 ---
+
+## はじめに
+こんにちは、雨水と申します。
+
+今回は、仮想環境上のやられサーバーに対してSQLインジェクション攻撃を行い、root権限を奪取するまでの過程を記録します。
+
+このような仮想環境で攻撃実験を行った記事をこのほかにも書いていますので、宜しければ合わせてご覧ください。
+前回記事：https://zenn.dev/rw_sec/articles/2db6e6b3bdf51d
+
+:::message alert
+本記事は、自身の管理下にある閉じた仮想ネットワーク内での実験記録です。
+許可のない第三者のサーバーやネットワークに対して同様の行為を行うことは、不正アクセス禁止法により処罰の対象となります。絶対に悪用しないでください。
+:::
+
+## 環境構成
+今回の実験環境は以下の通りです。
+
+* **ホストOS:** Windows 11
+* **仮想化ソフト:** Oracle VM VirtualBox 7.0
+* **攻撃機:** Parrot Security OS 5.3 (IP: 192.168.56.100)
+* **ターゲット:** DC-2(仮想マシン) 
+* **ネットワーク:** NATネットワーク（外部から隔離）
+
+## 用いた主要なツール
+* **nmap**
+* **wireshark**
+* **Hydra**
+* **wig**
+* **CeWL**
+
+## 攻撃のステップ
+
+### 1. 偵察
+
 ┌─[✗]─[user@parrot]─[~]
 └──╼ $ip -4 a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
