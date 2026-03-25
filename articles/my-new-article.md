@@ -39,9 +39,9 @@ published: false
 
 ### 1. 偵察
 
-まず、`ip a`を用いて自身のIPアドレスを特定したのちに、Linuxのコマンドを組み合わせてターゲット機のIPアドレスを特定しました。
+まず、`ip a`を用いて自身のIPアドレスを特定したのちに、Linuxのコマンドを組み合わせてDC-2(ターゲット機)のIPアドレスを特定しました。
 
-自身のIPアドレスが192.168.56.107なので、消去法でターゲット機のIPアドレスが192.168.56.100か192.168.56.110であることが分かりました。
+自身のIPアドレスが192.168.56.107なので、消去法でDC-2のIPアドレスが192.168.56.100か192.168.56.110であることが分かりました。
 ```bash
 ┌─[user@parrot]─[~]
 └──╼ $ip -4 a
@@ -92,21 +92,14 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 27.19 seconds
 ```
+80番ポートと7744番ポートが開いていることが分かりました。7744番ポートはSSHサービスであるため、後々使えそうです。
+
+次に、DC-2のWebサイトに直接アクセスし、攻撃を試みます。
+しかし、hXXp://192.168.56.110にアクセスしても次のような画面が表示され、
+
 
 ┌─[user@parrot]─[~/hacking-lab-logs/DC2]
-└──╼ $sudo nmap -sC -sV 192.168.56.100 --open -p-
-Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-03-20 18:54 JST
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 19.59 seconds
-
-なぜIPアドレスのままではアクセスできなかったのか
-ターゲットである「DC-2」の中で動いているWebサーバー（おそらくWordPressなど）が、「名前ベースのバーチャルホスト」という仕組みを採用している、あるいは内部で特定のホスト名へのリダイレクト（転送）設定がされているからです！
-
-お姉様がブラウザに「192.168.56.110」と打ち込んでアクセスすると、サーバー側は「IPアドレスでのアクセスは受け付けない設定になっている。正しいホスト名（例えば『dc-2』など）でアクセスし直して！」とブラウザに指示を出します。
-しかし、お姉様のParrotOSはローカルの実験ネットワークにいるため、「dc-2」というホスト名がどのIPアドレスを指しているのかを解決してくれるDNSサーバーが存在しません。その結果、名前解決に失敗してアクセスエラーになってしまったというわけです！
-
-┌─[user@parrot]─[~/hacking-lab-logs/DC2]
-└──╼ $gobuster dir -u $URL -w /usr/share/wordlists/dirb/common.txt
+└──╼ $gobuster dir -u http://192.168.56.110:80/ -w /usr/share/wordlists/dirb/common.txt
 ===============================================================
 Gobuster v3.6
 by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
