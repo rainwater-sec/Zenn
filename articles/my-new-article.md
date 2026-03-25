@@ -39,7 +39,11 @@ published: false
 
 ### 1. 偵察
 
-┌─[✗]─[user@parrot]─[~]
+まず、`ip a`を用いて自身のIPアドレスを特定したのちに、Linuxのコマンドを組み合わせてターゲット機のIPアドレスを特定しました。
+
+自身のIPアドレスが192.168.56.107なので、消去法でターゲット機のIPアドレスが192.168.56.100か192.168.56.110であることが分かりました。
+```bash
+┌─[user@parrot]─[~]
 └──╼ $ip -4 a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     inet 127.0.0.1/8 scope host lo
@@ -50,15 +54,24 @@ published: false
 3: enp0s8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
     inet 192.168.56.107/24 brd 192.168.56.255 scope global dynamic noprefixroute enp0s8
        valid_lft 575sec preferred_lft 575sec
+```
 
-       ┌─[user@parrot]─[~]
+```bash
+┌─[user@parrot]─[~]
 └──╼ $for ip in $(seq 1 254); do (ping -c 1 192.168.56.$ip 2> /dev/null | grep "64 bytes" | cut -d " " -f 4 | tr -d ":" &); done
 192.168.56.100
 192.168.56.107
 192.168.56.110
+```
+2択にまで絞れたので、両方に対して`nmap`を行いDC-2の開いているポートを確認しました。
 
+```bash
 ┌─[user@parrot]─[~/hacking-lab-logs/DC2]
-└──╼ $sudo nmap -sC -sV $IP --open -p-
+└──╼ $sudo nmap -sC -sV 192.168.56.100 --open -p-
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-03-25 22:03 JST
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+┌─[user@parrot]─[~/hacking-lab-logs/DC2]
+└──╼ $sudo nmap -sC -sV 192.168.56.110 --open -p-
 Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-03-20 18:39 JST
 Nmap scan report for 192.168.56.110
 Host is up (0.0010s latency).
@@ -78,6 +91,7 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 27.19 seconds
+```
 
 ┌─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $sudo nmap -sC -sV 192.168.56.100 --open -p-
