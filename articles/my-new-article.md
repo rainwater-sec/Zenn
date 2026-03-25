@@ -95,7 +95,11 @@ Nmap done: 1 IP address (1 host up) scanned in 27.19 seconds
 80番ポートと7744番ポートが開いていることが分かりました。7744番ポートはSSHサービスであるため、後々使えそうです。
 
 次に、DC-2のWebサイトに直接アクセスし、攻撃を試みます。
-しかし、hXXp://192.168.56.110にアクセスしても次のような画面が表示され、
+しかし、hXXp://192.168.56.110にアクセスしても次のような画面が表示され、エラーが出てしまいます。
+
+![alt text](../images/nmap/fail_to_show_toppage.png)
+
+
 
 
 ┌─[user@parrot]─[~/hacking-lab-logs/DC2]
