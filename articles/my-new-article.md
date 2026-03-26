@@ -120,7 +120,11 @@ sudo vi /etc/hosts
 設定完了後、ブラウザのアドレスバーに改めて`hXXp://192.168.56.110/`と入力してアクセスすると、無事にリダイレクトが行われ、ターゲットマシンのWordPressのトップページが表示されるようになります。
 ![alt text](../images/DC2_Toppage.png)
 
+Webサイトを探索すると、"Flag 1"というページがあり、ヒントとして`CeWL`というツールを用いることが示唆されていました。
 
+![alt text](../images/flag1.png)
+
+Webサイトに入力欄が無かったので、`GoBuster`ツールを用いて隠されたディレクトリを探索します。
 
 ┌─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $gobuster dir -u http://192.168.56.110:80/ -w /usr/share/wordlists/dirb/common.txt
@@ -151,6 +155,14 @@ Progress: 4614 / 4615 (99.98%)
 ===============================================================
 Finished
 ===============================================================
+
+`wp-admin`,`wp-includes`,`wp-content`ディレクトリが発見できました。これはWordPressの典型的なディレクトリ構成です。
+
+ブラウザで`hXXp://192.168.56.110/wp-admin/`にアクセスすると、ログイン画面が表示されました。
+
+![alt text](../images/login.png)
+
+
 
 ┌─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $wig $URL
