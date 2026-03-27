@@ -98,7 +98,7 @@ Nmap done: 1 IP address (1 host up) scanned in 27.19 seconds
 次に、DC-2のWebサイトに直接アクセスし、攻撃を試みます。
 しかし、hXXp://192.168.56.110にアクセスしても次のような画面が表示され、エラーが出てしまいます。
 
-![alt text](/images/nmap/fail_to_show_toppage.png)
+![alt text](/images/DC2/fail_to_show_toppage.png)
 
 この原因は、
 
@@ -119,11 +119,11 @@ sudo vi /etc/hosts
 とターゲットのIPアドレスとドメイン名の紐付けを直接追記します。
 
 設定完了後、ブラウザのアドレスバーに改めて`hXXp://192.168.56.110/`と入力してアクセスすると、無事にリダイレクトが行われ、ターゲットマシンのWordPressのトップページが表示されるようになります。
-![alt text](/images/DC2_Toppage.png)
+![alt text](/images/DC2/DC2_Toppage.png)
 
 Webサイトを探索すると、"Flag 1"というページがあり、ヒントとして`CeWL`というツールを用いることが示唆されていました。
 
-![alt text](/images/flag1.png)
+![alt text](/images/DC2/flag1.png)
 
 Webサイトに入力欄が無かったので、`GoBuster`ツールを用いて隠されたディレクトリを探索します。
 
@@ -163,7 +163,7 @@ Finished
 
 ブラウザで`hXXp://192.168.56.110/wp-admin/`にアクセスすると、ログイン画面が表示されました。
 
-![alt text](/images/login.png)
+![alt text](/images/DC2/login.png)
 
 ユーザーネームやパスワードが分からないので、`wig`というWordPressに対する解析ツールを用います。`wig`を用いることでバージョンを絞り込めます。
 
@@ -257,7 +257,6 @@ CeWL 5.5.2 (Grouping) Robin Wood (robin@digi.ninja) (https://digi.ninja/)
 ┌─[✗]─[user@parrot]─[~/hacking-lab-logs/DC2]
 └──╼ $hydra -L users.txt -P dict.txt dc-2 http-form-post '/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:F=incorrect'
 Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
-
 Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-03-22 14:25:07
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 495 login tries (l:3/p:165), ~31 tries per task
 [DATA] attacking http-post-form://dc-2:80/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:F=incorrect
@@ -271,7 +270,7 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-03-22 14:26:
 `jerry`ユーザーと`tom`ユーザーのパスワードが判明しました。
 実際にログインしてみると、以下のようなダッシュボードが表示されました。
 
-![alt text](/images/tom.png)
+![alt text](/images/DC2/tom.png)
 
 しかし、ダッシュボードを確認するとメールアドレスなどの情報は入手できたものの、直接次の攻撃のステップにつながりそうな手掛かりは見つかりませんでした。
 そこで、序盤の`nmap`で得たSSHポートが開いていたという情報を思い出し、ダッシュボードと同じパスワードが使い回されている可能性が高いと考え、侵入を試みました。
@@ -487,14 +486,23 @@ If you enjoyed this CTF, send me a tweet via @DCAU7.
 
 ここで致命的だったのは、親プロセスである`git`が`sudo`によって一時的に`root`権限で実行されていたことです。Linuxの仕様上、子プロセスは親プロセスの権限をそのまま引き継ぎます。そのため、`git`から呼び出されたページャー、そしてそこから呼び出された`bash`シェルまでもが`root`権限を継承してしまい、結果としてシステム全体を完全掌握されてしまいました。
 
-このように、正規のコマンドやバイナリに備わっている機能を悪用して制限を突破する手口は**GTFOBins**と呼ばれ、実際のサイバー攻撃でも頻繁に狙われます。
+このように、正規のコマンドやバイナリに備わっている機能を悪用して制限を突破する手口は"GTFOBins"と呼ばれ、実際のサイバー攻撃でも頻繁に狙われます。
 
 対策として、システム管理における「最小権限の原則」を厳格に適用することが不可欠です。
 特定のユーザーに`sudo`を許可する場合でも、今回のような`git`や`vi`、`less`といった内部からシェルを起動できるプログラムを安易に許可リストに含めるべきではありません。
 運用上どうしても特権での実行が必要な場合は、シェルエスケープ機能自体を環境変数で無効化する（例えば、LESSSECURE=1の設定）など、攻撃者に悪用される隙を与えないセキュアな設計が求められます。
 
-## おまけ1 WPScanの利用
+## おまけ WireSharkによるパケット解析
 
-## おまけ2 WireSharkによるパケット解析
+本実験の攻撃先であるDC-2はHTTPSではなくHTTPで構築されており、パケットが暗号化されていません。
+そのため、WireSharkをもちいてユーザーがログインしている際の通信を覗き見ることが可能であり、認証情報が漏洩してしまいパスワード解析の必要すらなくなってしまいます。
 
+以下に、実際に`jerry`ユーザーとしてログインした際のWireSharkの画面を示します。
 
+![alt text](/images/DC2/wireshark_final.png)
+
+ユーザーネームとパスワードが暗号化されずそのままネットワーク上を流れていることが確認できました。
+
+このような脆弱性を避けるため、システムを構築する際は、必ずTLS/SSL証明書を導入してHTTPS化し、通信経路を暗号化することが絶対的に求められます。
+
+## 終わりに
