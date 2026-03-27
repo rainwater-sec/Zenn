@@ -2,14 +2,14 @@
 title: "【ハッキングラボ】やられサーバー “DC-2” 攻略：CeWLによる辞書攻撃からgitを悪用したroot権限奪取まで"
 emoji: "💻"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["security", "hacking", "php", "cybersecurity"]
-published: false
+topics: ["security", "hacking","WordPress","cybersecurity"]
+published: True
 ---
 
 ## はじめに
 こんにちは、雨水と申します。
 
-今回はordPressを用いて作られたWebサイトに対して攻撃を行い、root権限を奪取するまでの過程を記録します。
+今回はWordPressを用いて作られたWebサイトに対して攻撃を行い、root権限を奪取するまでの過程を記録します。
 
 このような仮想環境で攻撃実験を行った記事をこのほかにも書いていますので、宜しければ合わせてご覧ください。
 前回記事：https://zenn.dev/rw_sec/articles/f64d0f93bc4296
@@ -472,12 +472,12 @@ If you enjoyed this CTF, send me a tweet via @DCAU7.
 特定のユーザーに`sudo`を許可する場合でも、今回のような`git`や`vi`、`less`といった内部からシェルを起動できるプログラムを安易に許可リストに含めるべきではありません。
 運用上どうしても特権での実行が必要な場合は、シェルエスケープ機能自体を環境変数で無効化する（例えば、LESSSECURE=1の設定）など、攻撃者に悪用される隙を与えないセキュアな設計が求められます。
 
-## おまけ WireSharkによるパケット解析
+## おまけ Wiresharkによるパケット解析
 
 本実験の攻撃先であるDC-2はHTTPSではなくHTTPで構築されており、パケットが暗号化されていません。
-そのため、WireSharkをもちいてユーザーがログインしている際の通信を覗き見ることが可能であり、認証情報が漏洩してしまいパスワード解析の必要すらなくなってしまいます。
+そのため、Wiresharkをもちいてユーザーがログインしている際の通信を覗き見ることが可能であり、認証情報が漏洩してしまいパスワード解析の必要すらなくなってしまいます。
 
-以下に、実際に`jerry`ユーザーとしてログインした際のWireSharkの画面を示します。
+以下に、実際に`jerry`ユーザーとしてログインした際のWiresharkの画面を示します。
 
 ![alt text](/images/DC2/wireshark_final.png)
 
