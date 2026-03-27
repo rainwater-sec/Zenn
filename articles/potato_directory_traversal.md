@@ -13,7 +13,8 @@ published: true
 今回は、仮想環境上のやられサーバーに対して、攻撃機から脆弱性を突き、root権限を奪取するまでの過程を記録します。
 
 このような仮想環境で攻撃実験を行った記事をこのほかにも書いていますので、宜しければ合わせてご覧ください。
-次回記事：https://zenn.dev/rw_sec/articles/f64d0f93bc4296
+
+次回記事：https://zenn.dev/rw_sec/articles/nullbyte_sql_injection
 
 :::message alert
 本記事は、自身の管理下にある閉じた仮想ネットワーク内での実験記録です。

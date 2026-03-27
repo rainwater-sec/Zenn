@@ -11,7 +11,9 @@ published: true
 今回は、仮想環境上のやられサーバーに対してSQLインジェクション攻撃を行い、root権限を奪取するまでの過程を記録します。
 
 このような仮想環境で攻撃実験を行った記事をこのほかにも書いていますので、宜しければ合わせてご覧ください。
-前回記事：https://zenn.dev/rw_sec/articles/2db6e6b3bdf51d
+
+前回記事：https://zenn.dev/rw_sec/articles/potato_directory_traversal
+磁界記事：https://zenn.dev/rw_sec/articles/dc2-privilege-escalation
 
 :::message alert
 本記事は、自身の管理下にある閉じた仮想ネットワーク内での実験記録です。
