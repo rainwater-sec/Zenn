@@ -1,5 +1,5 @@
 ---
-title: "ockerとTrivyで実践するDevSecOps：GitHub Actionsによる脆弱性スキャンの自動化"
+title: "DockerとTrivyで実践するDevSecOps：GitHub Actionsによる脆弱性スキャンの自動化"
 emoji: "💻"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [Docker, Trivy, Security,GitHub Actions]
